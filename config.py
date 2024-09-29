@@ -10,7 +10,7 @@ resolution_weight = 0.5
 zb_urls_limit = 10
 
 # 最大协程数
-max_concurrent_tasks = 10
+max_concurrent_tasks = 20
 
 # 是否打开测速
 open_sort = True

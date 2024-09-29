@@ -23,7 +23,7 @@ ffmpeg_time = 10
 # key: 地区，在http://tonkiang.us网站上搜索的关键词
 # value: 订阅url，在https://github.com/xisohi/IPTV-Multicast-source中找自己想要的
 search_dict = {
-    "安徽": "https://raw.githubusercontent.com/plplpopp/IPTV/refs/heads/master/config/rtp/%E5%AE%89%E5%BE%BD_%E7%94%B5%E4%BF%A1.txt"
+    "安徽": "https://raw.githubusercontent.com/plplpopp/TVbox/refs/heads/main/anhui.txt"
 }
 # 在http://tonkiang.us网站上搜索的源的页数
 search_page_num = 5

@@ -36,9 +36,8 @@ search_ignore_key = ["高清", "4K","HD"]
 crawl_type = "3"
 # 收集其他大佬url中的直播源
 crawl_urls = [
-    "https://mirror.ghproxy.com/https://raw.githubusercontent.com/plplpopp/TV/refs/heads/main/speedtest/zubo.txt"，
-    "https://ghproxy.net/https://raw.githubusercontent.com/plplpopp/collect-tv-txt/refs/heads/main/merged_output.txt"，
-    "https://ghproxy.net/https://raw.githubusercontent.com/ssili126/tv/main/itvlist.txt"，
+    "https://mirror.ghproxy.com/https://raw.githubusercontent.com/plplpopp/TV/refs/heads/main/speedtest/zubo.txt",
+    "https://ghproxy.net/https://raw.githubusercontent.com/plplpopp/collect-tv-txt/refs/heads/main/merged_output.txt",
     "https://github.moeyy.xyz/https://raw.githubusercontent.com/PizazzGY/TVBox/main/live.txt"
 ]
 # ipv6源检测有效性的代理地址，用于不支持ipv6网络的主机，若网络支持ipv6，这里填空""

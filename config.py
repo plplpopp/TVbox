@@ -8,8 +8,7 @@ resolution_weight = 0.5
 
 # 每个频道直播源数量
 zb_urls_limit = 10
-# 生成结果中接口的类型
-ipv_type = ipv4
+
 # 最大协程数
 max_concurrent_tasks = 20
 

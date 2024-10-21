@@ -23,8 +23,7 @@ ffmpeg_time = 10
 # key: 地区，在http://tonkiang.us网站上搜索的关键词
 # value: 订阅url，在https://github.com/xisohi/IPTV-Multicast-source中找自己想要的
 search_dict = {
-    "安徽": "https://mirror.ghproxy.com/https://raw.githubusercontent.com/plplpopp/TV/refs/heads/main/speedtest/txt/anhui.txt",
-    "湖南": "https://mirror.ghproxy.com/https://raw.githubusercontent.com/plplpopp/TV/refs/heads/main/speedtest/txt/hunan.txt"
+    "安徽": "https://ghproxy.net/https://raw.githubusercontent.com/Guovin/TV/refs/heads/master/config/rtp/%E5%AE%89%E5%BE%BD_%E7%94%B5%E4%BF%A1.txt"
 }
 # 在http://tonkiang.us网站上搜索的源的页数
 search_page_num = 10
@@ -36,7 +35,9 @@ search_ignore_key = ["高清", "4K","HD"]
 crawl_type = "3"
 # 收集其他大佬url中的直播源
 crawl_urls = [
-    "https://mirror.ghproxy.com/https://raw.githubusercontent.com/plplpopp/TV/refs/heads/main/speedtest/zubo.txt",
+    "http://102.134.54.106:3099/live/全国酒店源mini.txt",
+    "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u",
+    "http://120.79.4.185/new/mdlive.txt",
     "https://ghproxy.net/https://raw.githubusercontent.com/plplpopp/collect-tv-txt/refs/heads/main/merged_output.txt",
     "https://github.moeyy.xyz/https://raw.githubusercontent.com/PizazzGY/TVBox/main/live.txt"
 ]

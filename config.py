@@ -17,13 +17,13 @@ open_sort = True
 # 是否找不到源时保留demo的源
 is_use_demo_if_none = True
 # 1: 显示默认值，线路1 线路2，2：显示视频分辨率，如:1080x720
-xianlu_type = 2
+xianlu_type = 1
 # ffmpeg解析视频时间，单位秒
 ffmpeg_time = 10
 # key: 地区，在http://tonkiang.us网站上搜索的关键词
 # value: 订阅url，在https://github.com/xisohi/IPTV-Multicast-source中找自己想要的
 search_dict = {
-    "上海": "https://mirror.ghproxy.com/https://raw.githubusercontent.com/xisohi/IPTV-Multicast-source/main/shanghai/telecom.txt"
+    "安徽": "https://mirror.ghproxy.com/https://raw.githubusercontent.com/plplpopp/IPTV-Multicast-source/refs/heads/main/anhui/telecom.txt"
 }
 # 在http://tonkiang.us网站上搜索的源的页数
 search_page_num = 5
@@ -35,7 +35,10 @@ search_ignore_key = ["高清", "4K"]
 crawl_type = "1"
 # 收集其他大佬url中的直播源
 crawl_urls = [
-    "https://github.moeyy.xyz/https://raw.githubusercontent.com/PizazzGY/TVBox/main/live.txt"
+    "https://mirror.ghproxy.com/https://raw.githubusercontent.com/plplpopp/collect-tv-txt/refs/heads/main/merged_output.txt"，
+    "https://mirror.ghproxy.com/https://raw.githubusercontent.com/plplpopp/Myiptv/refs/heads/Files/IPTV.m3u"，
+    "https://mirror.ghproxy.com/https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u"，
+    "http://175.178.251.183:6689/live.txt"
 ]
 # ipv6源检测有效性的代理地址，用于不支持ipv6网络的主机，若网络支持ipv6，这里填空""
 ipv6_proxy = "http://www.ipv6proxy.net/go.php?u=" #此代理用于github，国内不一定能用

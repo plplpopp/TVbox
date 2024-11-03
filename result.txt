@@ -346,13 +346,13 @@ CCTV-17农村农业,http://58.37.82.140:56789/rtp/239.45.3.52:5140$1920x1080
 金鹰纪实,http://[2409:8087:74d9:21::6]/270000001128/9900000074/index.m3u8
 金鹰纪实,http://[2409:8087:5e00:24::1e]:6060/200000001898/460000089800010106/1.m3u8
 金鹰纪实,http://[2409:8087:5e00:24::1e]:6060/000000001000/5000000011000031203/1.m3u8
+金鹰纪实,http://222.70.23.103:6666/udp/239.45.1.45:5140
 金鹰纪实,http://36.46.98.55:8010/rtp/239.112.205.203:5140
 金鹰纪实,https://stream1.freetv.fun/jin-ying-ji-shi-4.m3u8
+金鹰纪实,http://221.196.136.66:1/udp/225.1.1.124:5002
+金鹰纪实,https://stream1.freetv.fun/jin-ying-ji-shi-18.ctv
 金鹰纪实,http://e1.woc.iiiya.cn:8888/rtp/239.61.3.7:9560
 金鹰纪实,https://stream1.freetv.fun/jin-ying-ji-shi-27.ctv
-金鹰纪实,https://stream1.freetv.fun/jin-ying-ji-shi-32.ctv
-金鹰纪实,https://stream1.freetv.fun/jin-ying-ji-shi-28.ctv
-金鹰纪实,https://stream1.freetv.fun/jin-ying-ji-shi-39.ctv
 宁夏卫视,http://[2409:8087:5e00:24::1e]:6060/200000001898/460000089800010110/1.m3u8
 宁夏卫视,http://[2409:8087:1a01:df::4077]:80/ottrrs.hl.chinamobile.com/PLTV/88888888/8/3221226454/index.m3u8
 宁夏卫视,http://[2409:8087:1a01:df::7005]/ottrrs.hl.chinamobile.com/PLTV/2/224/3221225632/2.m3u8

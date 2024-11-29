@@ -32,10 +32,12 @@ url_keywords_blacklist = []
 # 忽略的关键词，比如在demo.txt中配置广东珠江,但在订阅中只有广东珠江高清,就需要忽略掉"高清"
 search_ignore_key = ["高清", "4K"]
 # crawl_type的默认值为1-只爬取http://tonkiang.us上组播源；2-只爬取crawl_urls中配置的网站；3-全部
-crawl_type = "3"
+crawl_type = "2"
 # 收集其他大佬url中的直播源
 crawl_urls = [
     "https://raw.githubusercontent.com/plplpopp/collect-tv-txt/refs/heads/main/merged_output.txt",
+    "https://raw.githubusercontent.com/plplpopp/iptv1/refs/heads/master/tv/iptv6.txt",
+    "https://ghp.ci/raw.githubusercontent.com/Supprise0901/TVBox_live/main/live.txt",
     "https://raw.githubusercontent.com/plplpopp/Myiptv/refs/heads/Files/IPTV.m3u",
     "https://raw.githubusercontent.com/fanmingming/live/main/tv/m3u/ipv6.m3u",
     "http://175.178.251.183:6689/live.txt"

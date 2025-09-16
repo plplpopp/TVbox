@@ -7,7 +7,7 @@ response_time_weight = 0.5
 resolution_weight = 0.5
 
 # 每个频道直播源数量
-zb_urls_limit = 10
+zb_urls_limit = 5
 
 # 最大协程数
 max_concurrent_tasks = 10
@@ -17,13 +17,13 @@ open_sort = True
 # 是否找不到源时保留demo的源
 is_use_demo_if_none = True
 # 1: 显示默认值，线路1 线路2，2：显示视频分辨率，如:1080x720
-xianlu_type = 2
+xianlu_type = 1
 # ffmpeg解析视频时间，单位秒
 ffmpeg_time = 10
 # key: 地区，在http://tonkiang.us网站上搜索的关键词
 # value: 订阅url，在https://github.com/xisohi/IPTV-Multicast-source中找自己想要的
 search_dict = {
-    "上海": "https://mirror.ghproxy.com/https://raw.githubusercontent.com/xisohi/IPTV-Multicast-source/main/shanghai/telecom.txt"
+    "安徽": "https://raw.githubusercontent.com/plplpopp/IPTV-Multicast-source/refs/heads/main/anhui/telecom.txt"
 }
 # 在http://tonkiang.us网站上搜索的源的页数
 search_page_num = 5

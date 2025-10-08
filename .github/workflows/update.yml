@@ -1,218 +1,70 @@
-name: TV直播源自动更新
+name: Updater
 
 on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
   schedule:
-    - cron: '0 5,12,17 * * *'
-  
-  workflow_dispatch:
-    inputs:
-      force_update:
-        description: '强制更新（忽略缓存）'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
-      skip_speed_test:
-        description: '跳过测速（加快更新速度）'
-        required: false
-        default: 'false'
-        type: choice
-        options:
-          - 'false'
-          - 'true'
-
-permissions:
-  contents: write
+    # 每天凌晨2点自动运行（UTC时间）
+    - cron: '0 2 * * *'
 
 jobs:
-  update-sources:
-    name: 更新直播源
+  build-test:
+    name: Build and Test
     runs-on: ubuntu-latest
     
     steps:
-    - name: 检出代码
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: 设置Python环境
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
-        cache: 'pip'
-        
-    - name: 安装依赖
+        python-version: '3.10'
+    
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then
-          pip install -r requirements.txt
-        else
-          echo "requirements.txt 不存在，跳过依赖安装"
-        fi
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio
         
-    - name: 创建目录结构
+    - name: Run tests
       run: |
-        mkdir -p config output logs
-        echo "目录结构创建完成"
+        pytest tests/
         
-    - name: 准备配置文件
+    - name: Lint with flake8
       run: |
-        set -e  # 遇到错误立即退出
-        
-        # 创建配置文件
-        if [ ! -f config/config.ini ]; then
-          echo "创建默认配置文件..."
-          cat > config/config.ini << 'EOF'
-[Settings]
-; 基本功能开关
-open_epg = False
-open_empty_category = False
-open_filter_resolution = True
-open_filter_speed = True
-open_hotel = False
-open_hotel_foodie = True
-open_hotel_fofa = False
-open_local = True
-open_m3u_result = True
-open_multicast = False
-open_multicast_foodie = True
-open_multicast_fofa = False
-open_request = False
-open_rtmp = True
-open_service = True
-open_speed_test = ${{ inputs.skip_speed_test == 'true' && 'False' || 'True' }}
-open_subscribe = True
-open_supply = True
-open_update = True
-open_use_cache = ${{ inputs.force_update == 'true' && 'False' || 'True' }}
-
-; 文件路径配置
-final_file = output/result.txt
-local_file = config/local.txt
-source_file = config/demo.txt
-
-; 质量设置
-min_resolution = 1920x1080
-max_resolution = 1920x1080
-min_speed = 0.5
-
-; 网络设置
-request_timeout = 15
-speed_test_timeout = 10
-time_zone = Asia/Shanghai
-EOF
-          echo "配置文件创建完成"
-        else
-          echo "配置文件已存在，跳过创建"
-        fi
-        
-        # 创建必要的示例文件
-        for file in local.txt subscribe.txt demo.txt; do
-          if [ ! -f "config/${file}" ]; then
-            echo "创建 config/${file}"
-            touch "config/${file}"
-          fi
-        done
-        
-    - name: 验证配置文件
-      run: |
-        echo "=== 配置文件验证 ==="
-        if [ -f config/config.ini ]; then
-          echo "配置文件内容:"
-          cat config/config.ini
-          echo "配置文件行数: $(wc -l < config/config.ini)"
-        else
-          echo "错误：配置文件未创建"
-          exit 1
-        fi
-        
-    - name: 运行直播源更新
-      id: update
-      run: |
-        echo "开始更新直播源..."
-        echo "时间: $(date '+%Y-%m-%d %H:%M:%S')"
-        echo "工作目录: $(pwd)"
-        echo "文件列表:"
-        ls -la
-        
-        # 检查主程序是否存在
-        if [ ! -f main.py ]; then
-          echo "错误：main.py 不存在"
-          echo "当前目录文件:"
-          ls -la
-          exit 1
-        fi
-        
-        # 运行更新程序
-        python main.py || echo "程序执行完成"
-        
-        # 统计结果
-        if [ -f output/result.txt ]; then
-          SOURCE_COUNT=$(grep -c "^[^#]" output/result.txt 2>/dev/null || echo "0")
-          echo "有效源数量: $SOURCE_COUNT"
-          echo "source_count=$SOURCE_COUNT" >> $GITHUB_OUTPUT
-        else
-          echo "结果文件未生成，创建空文件"
-          touch output/result.txt
-          echo "source_count=0" >> $GITHUB_OUTPUT
-        fi
-        
-    - name: 显示更新结果
-      run: |
-        echo "=== 更新结果 ==="
-        if [ -f output/result.txt ]; then
-          FILE_SIZE=$(wc -c < output/result.txt)
-          LINE_COUNT=$(wc -l < output/result.txt)
-          echo "文件大小: ${FILE_SIZE} 字节"
-          echo "总行数: ${LINE_COUNT} 行"
-          echo "有效源数: ${{ steps.update.outputs.source_count }}"
-          
-          if [ $FILE_SIZE -gt 0 ]; then
-            echo "前5个频道:"
-            head -10 output/result.txt | grep -v "^#" | head -5 || echo "无有效频道"
-          else
-            echo "结果文件为空"
-          fi
-        else
-          echo "错误：结果文件不存在"
-        fi
-        
-    - name: 提交更改
-      if: steps.update.outputs.source_count > 0 || always()
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
-        # 添加可能更改的文件
-        git add output/ || true
-        git add logs/ || true
-        git add config/ || true
-        
-        if git diff --staged --quiet; then
-          echo "没有需要提交的更改"
-        else
-          git commit -m "🤖 自动更新直播源 - ${{ steps.update.outputs.source_count }}个有效源"
-          git push
-          echo "更改已提交"
-        fi
-        
-    - name: 上传制品
-      uses: actions/upload-artifact@v4
+        pip install flake8
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+  update-sources:
+    name: Update
+    needs: build-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # 只在main分支运行更新
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        name: tv-sources-${{ github.run_id }}
-        path: |
-          output/
-          logs/
-        retention-days: 3
-        
-    - name: 工作流状态总结
-      if: always()
+        python-version: '3.10'
+    
+    - name: Install dependencies
       run: |
-        echo "=== 工作流执行结果 ==="
-        echo "运行ID: ${{ github.run_id }}"
-        echo "触发者: ${{ github.actor }}"
-        echo "开始时间: ${{ github.event.workflow_run.created_at }}"
-        echo "结果文件: output/result.txt"
-        echo "有效源数: ${{ steps.update.outputs.source_count }}"
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run updater
+      run: |
+        python main.py
+        
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add config/ output/
+        git diff --quiet && git diff --staged --quiet || git commit -m "Automated source update [skip ci]"
+        git push

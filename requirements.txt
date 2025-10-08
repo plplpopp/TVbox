@@ -1,12 +1,3 @@
-requests
-feedparser
-pytz
-aiohttp
-bs4
-tqdm
-async-timeout
-Flask
-m3u8
-ffmpeg-python
-gevent
-selenium
+aiohttp>=3.8.0
+pytz>=2023.3
+configparser>=5.3.0

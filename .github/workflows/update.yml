@@ -2,69 +2,246 @@ name: Updater
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, master ]
   schedule:
-    # 每天凌晨2点自动运行（UTC时间）
-    - cron: '0 2 * * *'
+    # 每天UTC时间4:00运行（北京时间12:00）
+    - cron: '0 4 * * *'
+  workflow_dispatch:  # 允许手动触发
+    inputs:
+      config_mode:
+        description: '运行模式'
+        required: false
+        default: 'normal'
+        type: choice
+        options:
+        - normal
+        - config
+        - stats
+
+env:
+  PYTHON_VERSION: '3.9'
 
 jobs:
-  build-test:
-    name: Build and Test
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest pytest-asyncio
-        
-    - name: Run tests
-      run: |
-        pytest tests/
-        
-    - name: Lint with flake8
-      run: |
-        pip install flake8
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    
   update-sources:
-    name: Update
-    needs: build-test
+    name: 更新直播源
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'  # 只在main分支运行更新
     
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置Python环境
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
-    
-    - name: Install dependencies
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: 安装依赖
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install aiohttp pytz configparser
         
-    - name: Run updater
+    - name: 创建必要目录
       run: |
-        python main.py
+        mkdir -p config output logs config/rtp
         
-    - name: Commit and push changes
+    - name: 创建默认配置文件
       run: |
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-        git add config/ output/
-        git diff --quiet && git diff --staged --quiet || git commit -m "Automated source update [skip ci]"
-        git push
+        cat > config/config.ini << 'EOF'
+        [Settings]
+        # 功能开关配置
+        open_driver = false
+        open_epg = false
+        open_empty_category = false
+        open_filter_resolution = true
+        open_filter_speed = true
+        open_hotel = false
+        open_hotel_foodie = true
+        open_hotel_fofa = false
+        open_local = true
+        open_m3u_result = true
+        open_multicast = false
+        open_multicast_foodie = true
+        open_multicast_fofa = false
+        open_request = false
+        open_rtmp = true
+        open_service = true
+        open_speed_test = true
+        open_subscribe = true
+        open_supply = true
+        open_update = true
+        open_update_time = true
+        open_url_info = false
+        open_use_cache = true
+        open_history = true
+        open_headers = false
+        speed_test_filter_host = false
+        ipv6_support = false
+        
+        # 网络服务配置
+        app_host = http://localhost
+        app_port = 8000
+        cdn_url = 
+        
+        # 文件路径配置
+        final_file = output/result.txt
+        local_file = config/local.txt
+        source_file = config/demo.txt
+        
+        # 数量限制配置
+        hotel_num = 10
+        hotel_page_num = 1
+        multicast_num = 10
+        multicast_page_num = 1
+        local_num = 10
+        subscribe_num = 10
+        urls_limit = 10
+        
+        # 地区设置配置
+        hotel_region_list = 全部
+        multicast_region_list = 全部
+        
+        # 网络优化配置
+        isp = 
+        ipv4_num = 
+        ipv6_num = 
+        ipv_type = 全部
+        ipv_type_prefer = auto
+        location = 
+        
+        # 质量设置配置
+        min_resolution = 1920x1080
+        max_resolution = 1920x1080
+        min_speed = 0.5
+        
+        # 时间设置配置
+        recent_days = 30
+        request_timeout = 10
+        speed_test_limit = 10
+        speed_test_timeout = 10
+        time_zone = Asia/Shanghai
+        update_interval = 12
+        update_time_position = top
+        EOF
+        
+    - name: 创建示例订阅文件
+      run: |
+        cat > config/subscribe.txt << 'EOF'
+        # 直播源订阅文件
+        # 每行一个订阅URL
+        
+        # 示例订阅源（请替换为实际可用的订阅源）
+        # https://example.com/playlist.m3u
+        # https://raw.githubusercontent.com/username/repo/main/iptv.m3u
+        EOF
+        
+    - name: 创建示例本地源文件
+      run: |
+        cat > config/local.txt << 'EOF'
+        # 本地直播源文件
+        # 格式：频道名称,直播源URL
+        
+        # 示例频道
+        CCTV1,http://example.com/cctv1.m3u8
+        CCTV5,http://example.com/cctv5.m3u8
+        EOF
+        
+    - name: 创建示例模板文件
+      run: |
+        cat > config/demo.txt << 'EOF'
+        # 直播源模板文件
+        # 格式：频道名称,直播源URL
+        
+        # 示例模板
+        测试频道1,https://example.com/test1.m3u8
+        测试频道2,https://example.com/test2.m3u8
+        EOF
+        
+    - name: 创建白名单文件
+      run: |
+        touch config/whitelist.txt
+        echo "# 频道白名单" > config/whitelist.txt
+        echo "# 在此文件中列出的频道将优先使用" >> config/whitelist.txt
+        
+    - name: 运行直播源更新器
+      id: run-updater
+      run: |
+        echo "开始运行直播源更新器..."
+        MODE="${{ inputs.config_mode || 'normal' }}"
+        
+        case $MODE in
+          "normal")
+            python main.py
+            ;;
+          "config")
+            python main.py --config
+            ;;
+          "stats")
+            python main.py --stats
+            ;;
+        esac
+        
+    - name: 检查结果文件
+      id: check-result
+      if: always()
+      run: |
+        if [ -f "output/result.txt" ]; then
+          echo "结果文件生成成功"
+          echo "文件大小: $(wc -l < output/result.txt) 行"
+          echo "前10行内容:"
+          head -10 output/result.txt
+        else
+          echo "结果文件未生成"
+        fi
+        
+    - name: 上传结果文件
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: tv-sources-result
+        path: |
+          output/
+          logs/
+        retention-days: 7
+        
+    - name: 上传缓存文件
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: tv-sources-cache
+        path: output/cache.pkl.gz
+        retention-days: 30
+
+  notify:
+    name: 通知结果
+    needs: update-sources
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 下载结果文件
+      uses: actions/download-artifact@v4
+      with:
+        name: tv-sources-result
+        
+    - name: 检查更新结果
+      id: check-update
+      run: |
+        if [ -f "output/result.txt" ]; then
+          CHANNEL_COUNT=$(grep -c "^[^#]" output/result.txt || true)
+          echo "channel_count=$CHANNEL_COUNT" >> $GITHUB_OUTPUT
+          echo "更新完成，共找到 $CHANNEL_COUNT 个频道"
+        else
+          echo "channel_count=0" >> $GITHUB_OUTPUT
+          echo "更新失败，未生成结果文件"
+        fi
+        
+    - name: 发送通知到Slack (可选)
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: 'TV直播源更新失败！请检查日志。'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
